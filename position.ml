@@ -54,27 +54,33 @@ let arrival = {currpos = (12000., 12000.); precpos = (12000., 12000.); speedvect
 let degtorad = fun deg ->
   deg*.pi/.180.;;
 
+(*solveur de polynome de degré 2*)
+let solve2 = fun a b c ->
+  let delta = b**2. -. 4.*.a*.c in
+  let x1 = (-.b -. sqrt delta)/.(2.*.a) in
+  let x2 = (-.b +. sqrt delta)/.(2.*.a) in
+  (x1,x2);;
+
 (*fonction qui renvoie les coordonnées des centres de cercles de rayon donné tangent à une droite donnée en un point donné - il y en a deux*)
 let center = fun radius dirvector tgpoint ->
   let (u, v) = dirvector in
-  let (x, y) = tgpoint in
-  (*on cherche l'équation de la perpendiculaire de la droite portée par dirvector en tgpoint i.e. -vx+uy+w=0 avec w qui vérifie les coordonnées de tgpoint*)
-  let w = v*.x-.u*.y in
+  let (s, t) = tgpoint in
+  (*on cherche l'équation de la perpendiculaire de la droite portée par dirvector en tgpoint i.e. ux+vy=w avec w qui vérifie les coordonnées de tgpoint*)
+  let w = u*.s+.v*.t in
   (*on cherche les deux intersections entre la droite définie précédement et le cercle de centre tgpoint et de rayon radius*)
   (*cela revient à chercher les solutions de ax² + bx + c*)
-  let a = 1. +. v**2. /. (u**2.) in
-  let b =  -.2. *. (x +. v*.w /. (u**2.) +. v*.y /. u) in
-  let c = x**2. +. y**2. +.  w**2. /. (u**2.) +. 2.*.w*.y/.u -. radius**2. in
-  let delta = b**2. -. 4.*.a*.c in
-  let racdelta = sqrt delta in
-  let xs_un = (-.b -. racdelta)/.(2.*.a) in
-  let xs_deux = (-.b +. racdelta)/.(2.*.a) in
+  let a = 1. +. (u**2.) /. (v**2.) in
+  let b = 2. *. (t*.u/.v -. s -. u*.w/.(v**2.)) in
+  let c = s**2. +. t**2. +. (w**2.) /. (v**2.) -. 2.*.w*.t/.v -. radius**2. in
+  let (x1,x2)= solve2 a b c in
   let ys = fun xs ->
-    (v*.xs-.w)/.u in
-  let ys_un = ys xs_un in
-  let ys_deux = ys xs_deux in
-  ((xs_un, ys_un),(xs_deux, ys_deux));;
-  
+    (w -. u*.xs)/.v in
+  let y1 = ys x1 in
+  let y2 = ys x2 in
+  ((x1,y1),(x2,y2));;
+
+let pos_circle = fun radius center dist initpoint ->
+  ;;
 
 (*fonction qui prend une traj et qui check intersection avec un nuage*)
 
