@@ -77,9 +77,12 @@ let center = fun radius dirvector tgpoint ->
     (w -. u*.xs)/.v in
   let y1 = ys x1 in
   let y2 = ys x2 in
-  ((x1,y1),(x2,y2));;
+  [(x1,y1),(x2,y2)];;
 
-let pos_circle = fun radius center dist initpoint ->
+let pos_circle = fun radius dirvector tgpoint center distance ->
+  ;;
+
+let pos_vector = fun dirvector distance ->
   ;;
 
 (*fonction qui prend une traj et qui check intersection avec un nuage*)
@@ -93,6 +96,19 @@ let banktoradius = fun speed g bank ->
 
 (*fonction qui calcule les positions suivantes possibles*)
 let nextpos = fun planepos arrival banks dt ->
-
+  let circle_list = [] in
+  let nextpos_list = [(pos_vector planepos.speedvector planepos.speevector *. dt)] in
+  match banks with
+    [] -> failwith "liste vide"
+  | tete::queue -> let banks_without_zero = queue in
+  let radius = banktoradius a_trois_vingt.speed g bank in
+  let banks_iter_action = fun bank ->
+    circle_list @ center radius planepos.speedvector planepos.currpos
+  in
+  List.iter banks_iter_action banks_without_zero;
+  let pos_circle_map = fun circle ->
+    pos_circle radius planepos.speedvector planepos.currpos circle (planepos.speevector *. dt)
+  in
+  nextpos_list @ List.map pos_circle_map circle_list;
 
 (*fonction qui calcule une trajectoire à partir d'une inclinaison*)
